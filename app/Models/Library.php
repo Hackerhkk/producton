@@ -15,4 +15,8 @@ class Library extends Model
     {
         return $this->hasMany(Seat::class);
     }
+    public function layout()
+{
+    return $this->hasOne(LibraryLayout::class);
+}
 }

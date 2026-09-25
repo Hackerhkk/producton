@@ -4,6 +4,15 @@
 
 @section('content')
 
+@php
+    /*
+     * Only students having pending/partial due fees.
+     */
+    $dueStudents = $studentReports->filter(function ($report) {
+        return (float) $report['due_amount'] > 0;
+    })->values();
+@endphp
+
 <div>
 
     {{-- PAGE HEADER --}}
@@ -12,11 +21,11 @@
         <div>
 
             <h1 class="text-2xl font-bold text-[#111827]">
-                Fee & Wallet Report
+                Due Fee Report
             </h1>
 
             <p class="mt-1 text-sm text-gray-500">
-                Student wallet balance and due fees
+                Students with pending or partial fees
             </p>
 
             {{-- Library Filter --}}
@@ -28,7 +37,7 @@
                 <select
                     name="library_id"
                     onchange="this.form.submit()"
-                    class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#2874b9] focus:ring-2 focus:ring-[#2874b9]/20">
+                    class="cursor-pointer rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#2874b9] focus:ring-2 focus:ring-[#2874b9]/20">
 
                     <option value="">
                         All Libraries
@@ -57,7 +66,7 @@
         <button
             type="button"
             onclick="window.print()"
-            class="inline-flex w-fit items-center gap-2 rounded-lg bg-[#111827] px-4 py-2 text-sm font-medium text-white transition hover:bg-black">
+            class="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg bg-[#111827] px-4 py-2 text-sm font-medium text-white transition hover:bg-black">
 
             <i data-lucide="printer" class="h-4 w-4"></i>
 
@@ -75,7 +84,7 @@
     <div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3 print:hidden">
 
 
-        {{-- TOTAL STUDENTS --}}
+        {{-- DUE STUDENTS --}}
         <div
             class="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 shadow-[0_1px_3px_rgba(16,24,40,0.03)]">
 
@@ -84,21 +93,21 @@
                 <div class="min-w-0">
 
                     <p class="text-xs font-semibold uppercase tracking-wide text-[#91a0b3]">
-                        Students
+                        Due Students
                     </p>
 
                     <h2 class="mt-1 text-2xl font-extrabold leading-none text-[#111827]">
-                        {{ $studentReports->count() }}
+                        {{ $dueStudents->count() }}
                     </h2>
 
                     <p class="mt-1 text-[11px] text-[#8291a8]">
-                        Active students
+                        Students with pending fees
                     </p>
 
                 </div>
 
                 <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#e7f1fb] text-[#347ec0]">
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
 
                     <i data-lucide="users" class="h-5 w-5"></i>
 
@@ -122,11 +131,11 @@
                     </p>
 
                     <h2 class="mt-1 text-2xl font-extrabold leading-none text-[#111827]">
-                        ₹{{ number_format($studentReports->sum('wallet_balance'), 2) }}
+                        ₹{{ number_format($dueStudents->sum('wallet_balance'), 2) }}
                     </h2>
 
                     <p class="mt-1 text-[11px] text-[#8291a8]">
-                        Total available balance
+                        Wallet of due students
                     </p>
 
                 </div>
@@ -152,11 +161,11 @@
                 <div class="min-w-0">
 
                     <p class="text-xs font-semibold uppercase tracking-wide text-[#91a0b3]">
-                        Due Fees
+                        Total Due
                     </p>
 
                     <h2 class="mt-1 text-2xl font-extrabold leading-none text-[#111827]">
-                        ₹{{ number_format($studentReports->sum('due_amount'), 2) }}
+                        ₹{{ number_format($dueStudents->sum('due_amount'), 2) }}
                     </h2>
 
                     <p class="mt-1 text-[11px] text-[#8291a8]">
@@ -191,7 +200,7 @@
         <div class="mb-6 hidden text-center print:block">
 
             <h2 class="text-xl font-bold text-gray-900">
-                STUDENT FEE & WALLET REPORT
+                STUDENT DUE FEE REPORT
             </h2>
 
             <p class="mt-1 text-sm text-gray-500">
@@ -272,7 +281,7 @@
 
                 <tbody>
 
-                    @forelse($studentReports as $index => $report)
+                    @forelse($dueStudents as $index => $report)
 
                         <tr class="border border-gray-300">
 
@@ -338,7 +347,7 @@
 
                             {{-- DUE --}}
                             <td
-                                class="border border-gray-300 px-3 py-3 text-right">
+                                class="border border-gray-300 px-3 py-3 text-right font-semibold text-red-600">
 
                                 ₹{{ number_format($report['due_amount'], 2) }}
 
@@ -349,25 +358,9 @@
                             <td
                                 class="border border-gray-300 px-3 py-3 text-center">
 
-                                @if($report['status'] === 'Paid')
-
-                                    <span class="font-semibold text-green-600">
-                                        Paid
-                                    </span>
-
-                                @elseif($report['status'] === 'Ready')
-
-                                    <span class="font-semibold text-blue-600">
-                                        Ready
-                                    </span>
-
-                                @else
-
-                                    <span class="font-semibold text-red-600">
-                                        Due
-                                    </span>
-
-                                @endif
+                                <span class="font-semibold text-red-600">
+                                    Due
+                                </span>
 
                             </td>
 
@@ -380,9 +373,9 @@
 
                             <td
                                 colspan="6"
-                                class="border border-gray-300 px-4 py-8 text-center text-gray-500">
+                                class="border border-gray-300 px-4 py-8 text-center text-green-600">
 
-                                No active students found.
+                                No students have pending fees.
 
                             </td>
 
@@ -405,17 +398,17 @@
             class="mt-6 flex flex-col gap-2 border-t border-gray-300 pt-3 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
 
             <span>
-                Total Students: {{ $studentReports->count() }}
+                Due Students: {{ $dueStudents->count() }}
             </span>
 
             <span>
                 Total Wallet:
-                ₹{{ number_format($studentReports->sum('wallet_balance'), 2) }}
+                ₹{{ number_format($dueStudents->sum('wallet_balance'), 2) }}
             </span>
 
             <span>
                 Total Due:
-                ₹{{ number_format($studentReports->sum('due_amount'), 2) }}
+                ₹{{ number_format($dueStudents->sum('due_amount'), 2) }}
             </span>
 
             <span>
@@ -449,32 +442,20 @@
         background: white !important;
     }
 
-    /*
-     * Sidebar / Navbar / Header hide
-     */
     nav,
     aside,
     header {
         display: none !important;
     }
 
-    /*
-     * Print hidden elements
-     */
     .print\:hidden {
         display: none !important;
     }
 
-    /*
-     * Print title
-     */
     .print\:block {
         display: block !important;
     }
 
-    /*
-     * Remove unnecessary page styling
-     */
     .print\:shadow-none {
         box-shadow: none !important;
     }
@@ -487,9 +468,6 @@
         padding: 0 !important;
     }
 
-    /*
-     * Table printing
-     */
     table {
         width: 100%;
         page-break-inside: auto;
@@ -504,9 +482,6 @@
         display: table-header-group;
     }
 
-    /*
-     * Keep table borders visible
-     */
     th,
     td {
         border: 1px solid #d1d5db !important;
@@ -516,6 +491,5 @@
 }
 
 </style>
-
 
 @endsection

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Darker Sky Blue Gradient for Depth -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#0369A1" />
+    </linearGradient>
+    
+    <!-- Subtle Inner Shadow for Book Pages -->
+    <linearGradient id="pageGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="50%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Roof Arch -->
+  <path fill="none" stroke="url(#skyGrad)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" d="M70 145 L256 50 L442 145" />
+
+  <!-- Base Curve -->
+  <path fill="none" stroke="url(#skyGrad)" stroke-width="28" stroke-linecap="round" d="M66 435 Q256 390 446 435" />
+
+  <!-- Back Books Group -->
+  <!-- Book 1 Spine -->
+  <path fill="url(#skyGrad)" d="M100 170 L170 120 C180 115 190 125 190 135 V380 L100 400 Z" />
+  
+  <!-- Book 2 Spine -->
+  <path fill="url(#skyGrad)" d="M190 170 L260 120 C270 115 280 125 280 135 V380 L190 395 Z" opacity="0.9" />
+
+  <!-- Foreground Open Book Base -->
+  <path fill="url(#skyGrad)" d="M180 200 H280 V370 H180 Z" rx="8" />
+
+  <!-- Front Open Book Pages -->
+  <g transform="translate(40, 20)">
+    <!-- Right Open Page Container -->
+    <path fill="#FFFFFF" stroke="url(#skyGrad)" stroke-width="20" stroke-linejoin="round" d="M216 170 C270 140 330 160 360 150 V320 C330 330 270 310 216 340 Z" />
+    
+    <!-- Lines on Page -->
+    <path fill="none" stroke="url(#skyGrad)" stroke-width="12" stroke-linecap="round" d="M260 210 Q300 195 330 205 M260 245 Q300 230 330 240 M260 280 Q300 265 320 273" />
+  </g>
+</svg>

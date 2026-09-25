@@ -3,6 +3,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+<link rel="icon" type="image/png" href="{{ asset('svg.svg') }}">
 
 
 <meta charset="utf-8">
@@ -13,7 +14,6 @@
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-<script src="https://unpkg.com/lucide@latest"></script>
 
 
 </head>

@@ -10,6 +10,7 @@ use App\Models\FeeCycle;
 use App\Models\StudentWallet;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\ShortUrl;
 
 class UserAuthController extends Controller
 {
@@ -20,8 +21,46 @@ class UserAuthController extends Controller
         // =========================
 
         if (Auth::check() && Auth::user()->role == 'user') {
-            return view('dashboard');
+
+    $userId = Auth::id();
+
+    // Total Short URLs
+    $shortUrlCount = ShortUrl::where(
+        'user_id',
+        $userId
+    )->count();
+
+    // Total Clicks
+    $shortUrlClicks = ShortUrl::where(
+        'user_id',
+        $userId
+    )->sum('clicks');
+
+    // Today's Clicks
+    $todayShortUrlClicks = ShortUrl::where(
+        'user_id',
+        $userId
+    )
+    ->withCount([
+        'clicks as today_clicks' => function ($query) {
+            $query->whereDate(
+                'clicked_at',
+                Carbon::today()
+            );
         }
+    ])
+    ->get()
+    ->sum('today_clicks');
+
+    return view(
+        'dashboard',
+        compact(
+            'shortUrlCount',
+            'shortUrlClicks',
+            'todayShortUrlClicks'
+        )
+    );
+}
 
 
         // =========================

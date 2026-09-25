@@ -27,7 +27,7 @@
         <select
             name="library_id"
             onchange="this.form.submit()"
-            class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#2874b9] focus:ring-2 focus:ring-[#2874b9]/20">
+            class="rounded-xl border w-40 border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 outline-none focus:border-[#2874b9] focus:ring-2 focus:ring-[#2874b9]/20">
 
             <option value="">
                 All Libraries
@@ -44,7 +44,6 @@
                 </option>
 
             @endforeach
-
         </select>
 
     </form>
@@ -68,7 +67,10 @@
         onclick="openSeatModal()"
         class="rounded-xl bg-[#2874b9] px-5 py-3 text-sm font-semibold text-white hover:bg-[#2167a7]">
 
-        Add Seat
+
+            <i data-lucide="armchair"></i>
+
+        
 
     </button>
 
@@ -141,48 +143,7 @@
 
 
         {{-- Actions --}}
-        <div class="icon-box flex gap-3 text-2xl">
-
-            {{-- IMPORTANT:
-                 Active assignment ko actual source maana gaya hai.
-                 Sirf seat status par depend nahi karenge.
-            --}}
-
-            @if($seat->activeAssignment)
-
-                {{-- Release --}}
-                <button
-                    type="button"
-                    onclick="openReleaseModal(
-                        {{ $seat->id }},
-                        @js($seat->activeAssignment->student?->name ?? 'Student')
-                    )"
-                    class="text-orange-500 hover:text-orange-600"
-                    title="Release Student">
-
-                    <i data-lucide="user-round-minus"></i>
-
-                </button>
-
-            @else
-
-                {{-- Assign --}}
-                <button
-                    type="button"
-                    onclick="openAssignModal(
-                        {{ $seat->id }},
-                        {{ $seat->library_id }}
-                    )"
-                    class="text-[#2874b9] hover:text-[#2167a7]"
-                    title="Assign Student">
-
-                    <i data-lucide="user-plus"></i>
-
-                </button>
-
-            @endif
-
-
+        <div class="icon-box flex gap-3 text-2xl">  
             {{-- Delete --}}
             <form
                 action="{{ route('admin.seat.destroy', $seat->id) }}"
@@ -658,15 +619,19 @@
                     Select Student
                 </option>
 
-                @foreach($students as $student)
+                @forelse($availableStudents as $student)
 
-                    <option value="{{ $student->id }}">
+    <option value="{{ $student->id }}">
+        {{ $student->name }} - {{ $student->mobile }}
+    </option>
 
-                        {{ $student->name }} - {{ $student->mobile }}
+@empty
 
-                    </option>
+    <option value="" disabled>
+        No available students
+    </option>
 
-                @endforeach
+@endforelse
 
             </select>
 

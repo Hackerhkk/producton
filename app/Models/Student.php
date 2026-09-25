@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Student extends Model
 {
@@ -16,14 +19,62 @@ class Student extends Model
         'student_photo',
         'id_front',
         'id_back',
+        'user_id',
     ];
 
-    public function seatAssignments()
+
+    /*
+    |--------------------------------------------------------------------------
+    | User
+    |--------------------------------------------------------------------------
+    */
+
+    public function user(): BelongsTo
     {
-        return $this->hasMany(SeatAssignment::class);
+        return $this->belongsTo(
+            User::class
+        );
     }
-    public function wallet()
-{
-    return $this->hasOne(StudentWallet::class);
-}
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Seat Assignments
+    |--------------------------------------------------------------------------
+    */
+
+    public function seatAssignments(): HasMany
+    {
+        return $this->hasMany(
+            SeatAssignment::class
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Wallet
+    |--------------------------------------------------------------------------
+    */
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(
+            StudentWallet::class
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Test Attempts
+    |--------------------------------------------------------------------------
+    */
+
+    public function testAttempts(): HasMany
+    {
+        return $this->hasMany(
+            TestAttempt::class
+        );
+    }
 }
