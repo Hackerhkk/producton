@@ -13,8 +13,6 @@ COPY resources ./resources
 COPY public ./public
 COPY vite.config.js ./
 
-
-
 RUN npm run build
 
 
@@ -27,19 +25,20 @@ WORKDIR /var/www/html
 
 
 # ============================================
-# Install system dependencies
+# System dependencies
 # ============================================
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
+    curl \
+    nginx \
+    supervisor \
     libzip-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
-    nginx \
-    supervisor \
-    curl \
+    libonig-dev \
     && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -57,7 +56,7 @@ RUN apt-get update && apt-get install -y \
 
 
 # ============================================
-# Install Composer
+# Composer
 # ============================================
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -85,39 +84,44 @@ COPY --from=frontend /app/public/build ./public/build
 
 
 # ============================================
-# Laravel storage permissions
+# Laravel directories
 # ============================================
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
     storage/framework/views \
     storage/logs \
-    bootstrap/cache \
-    && chown -R www-data:www-data \
-        storage \
-        bootstrap/cache \
-        public
+    bootstrap/cache
 
 
 # ============================================
-# Nginx
+# Permissions
+# ============================================
+RUN chown -R www-data:www-data \
+    storage \
+    bootstrap/cache \
+    public
+
+
+# ============================================
+# Nginx configuration
 # ============================================
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 
 # ============================================
-# Supervisor
+# Supervisor configuration
 # ============================================
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 
 # ============================================
-# Render uses port 10000
+# Render port
 # ============================================
 EXPOSE 10000
 
 
 # ============================================
-# Start Nginx + PHP-FPM
+# Start PHP-FPM + Nginx
 # ============================================
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
