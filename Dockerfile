@@ -13,8 +13,7 @@ COPY resources ./resources
 COPY public ./public
 COPY vite.config.js ./
 
-# Copy postcss config if it exists
-COPY postcss.config.js ./
+
 
 RUN npm run build
 
